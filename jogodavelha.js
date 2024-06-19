@@ -1,58 +1,53 @@
-const board = document.getElementById("board")
-const casinhas = board.getElementsByTagName("div")
-const boxVencedor = document.getElementById("vencedor")
+const board = document.getElementById("board");
+const casinhas = board.getElementsByTagName("div");
+const boxVencedor = document.getElementById("vencedor");
+const resetButton = document.getElementById("resetButton");
 
 let jogadas = 0;
 
-for (let i=0; i<casinhas.length; i++) {
-  console.log(casinhas[i])
-  casinhas[i].addEventListener('click', casinhaclick)
+for (let i = 0; i < casinhas.length; i++) {
+  casinhas[i].addEventListener('click', casinhaclick);
 }
 
+resetButton.addEventListener('click', resetGame);
+
 function casinhaclick() {
-    if(this.innerHTML == "") {
-        if(jogadas%2 == 0) {
-            this.innerHTML = "X";
-        }else{
-            this.innerHTML = "O";
-        }
-        jogadas +=1;    
+  if (this.innerHTML == "" && boxVencedor.innerHTML == "") {
+    if (jogadas % 2 == 0) {
+      this.innerHTML = "X";
+    } else {
+      this.innerHTML = "O";
     }
-    if(jogadas >=5){
-        verificaGanhador()
-    }
+    jogadas += 1;
+  }
+  if (jogadas >= 5) {
+    verificaGanhador();
+  }
 }
 
 function verificaGanhador() {
-    //validando na horizontal
-    if(casinhas[0].innerHTML == casinhas[1].innerHTML && casinhas[1].innerHTML == casinhas[2].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[0].innerHTML + "' Venceu!"
-    }
-    if(casinhas[3].innerHTML == casinhas[4].innerHTML && casinhas[4].innerHTML == casinhas[5].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[3].innerHTML + "' Venceu!"
-    }
-    if(casinhas[6].innerHTML == casinhas[7].innerHTML && casinhas[7].innerHTML == casinhas[8].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[6].innerHTML + "' Venceu!"
-    }
+  // Validando na horizontal
+  if (checkWinner(0, 1, 2) || checkWinner(3, 4, 5) || checkWinner(6, 7, 8) ||
+      checkWinner(0, 3, 6) || checkWinner(1, 4, 7) || checkWinner(2, 5, 8) ||
+      checkWinner(0, 4, 8) || checkWinner(2, 4, 6)) {
+    boxVencedor.innerHTML = "Parabéns! O '" + casinhas[winIndex[0]].innerHTML + "' Venceu!";
+  }
+}
 
-    //validando na vertical
-    if(casinhas[0].innerHTML == casinhas[3].innerHTML && casinhas[3].innerHTML == casinhas[6].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[0].innerHTML + "' Venceu!"
-    }
-    if(casinhas[1].innerHTML == casinhas[4].innerHTML && casinhas[4].innerHTML == casinhas[7].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[1].innerHTML + "' Venceu!"
-    }
-    if(casinhas[2].innerHTML == casinhas[5].innerHTML && casinhas[5].innerHTML == casinhas[8].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[2].innerHTML + "' Venceu!"
-    }
+let winIndex = [];
 
-    //validando na vertical
-    if(casinhas[0].innerHTML == casinhas[4].innerHTML && casinhas[4].innerHTML == casinhas[8].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[0].innerHTML + "' Venceu!"
-    }
-    if(casinhas[2].innerHTML == casinhas[4].innerHTML && casinhas[4].innerHTML == casinhas[6].innerHTML) {
-        boxVencedor.innerHTML = "O '" + casinhas[2].innerHTML + "' Venceu!"
-    }
+function checkWinner(a, b, c) {
+  if (casinhas[a].innerHTML !== "" && casinhas[a].innerHTML === casinhas[b].innerHTML && casinhas[a].innerHTML === casinhas[c].innerHTML) {
+    winIndex = [a, b, c];
+    return true;
+  }
+  return false;
+}
 
-    console.log(casinhas[0].innerHTML)
+function resetGame() {
+  for (let i = 0; i < casinhas.length; i++) {
+    casinhas[i].innerHTML = "";
+  }
+  boxVencedor.innerHTML = "";
+  jogadas = 0;
 }
