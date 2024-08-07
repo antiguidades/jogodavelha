@@ -1,39 +1,38 @@
-let currentPlayer = 'x';
-const cells = document.querySelectorAll('.cell');
+document.addEventListener('DOMContentLoaded', () => {
+    const cells = document.querySelectorAll('.cell');
+    const message = document.getElementById('message');
+    let currentPlayer = 'X';
+    let board = Array(9).fill(null);
 
-cells.forEach(cell => {
-    cell.addEventListener('click', () => {
-        if (!cell.classList.contains('x') && !cell.classList.contains('o')) {
-            cell.classList.add(currentPlayer);
+    function checkWinner() {
+        const winConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Horizontais
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Verticais
+            [0, 4, 8], [2, 4, 6]  // Diagonais
+        ];
 
-            if (checkWin()) {
-                alert(`Jogador ${currentPlayer.toUpperCase()} venceu!`);
-                resetGame();
-            } else if ([...cells].every(cell => cell.classList.contains('x') || cell.classList.contains('o'))) {
-                alert('Empate!');
-                resetGame();
-            }
+        return winConditions.some(condition => {
+            const [a, b, c] = condition;
+            return board[a] && board[a] === board[b] && board[a] === board[c];
+        });
+    }
 
-            currentPlayer = currentPlayer === 'x' ? 'o' : 'x';
+    function handleClick(event) {
+        const index = event.target.dataset.index;
+
+        if (board[index] || message.textContent) return;
+
+        board[index] = currentPlayer;
+        event.target.textContent = currentPlayer;
+
+        if (checkWinner()) {
+            message.textContent = `Jogador ${currentPlayer} venceu!`;
+        } else if (board.every(cell => cell)) {
+            message.textContent = 'Empate!';
+        } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         }
-    });
+    }
+
+    cells.forEach(cell => cell.addEventListener('click', handleClick));
 });
-
-function checkWin() {
-    const winningCombinations = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas horizontais
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Linhas verticais
-        [0, 4, 8], [2, 4, 6] // Diagonais
-    ];
-
-    return winningCombinations.some(combination => {
-        const [a, b, c] = combination;
-        return cells[a].classList.contains(currentPlayer) &&
-               cells[b].classList.contains(currentPlayer) &&
-               cells[c].classList.contains(currentPlayer);
-    });
-}
-
-function resetGame() {
-    cells.forEach(cell => cell.classList.remove('x', 'o'));
-}
